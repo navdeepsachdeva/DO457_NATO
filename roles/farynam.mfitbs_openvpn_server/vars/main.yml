@@ -1,0 +1,4 @@
+---
+# vars file for openvpn-server
+
+DH_LEN: 4096

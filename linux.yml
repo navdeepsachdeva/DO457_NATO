@@ -1,0 +1,23 @@
+- name: Linux Play
+  hosts: workstation*
+  gather_facts: false
+  tasks:
+    - name: Run a Command passwd
+      ansible.builtin.command: tail -n 2 /etc/passwd
+
+    # - name: Run a Command group
+    #   ansible.builtin.command: head -n 2 /etc/group
+
+    - name: Create a File
+      ansible.builtin.copy:
+        content: "Hello CLass DO457"
+        dest: /tmp/f1
+      
+      # Ad-Hoc Command INI Format
+      # ansible.builtin.copy: content="Hello CLass" dest=/tmp/f1
+      # ansible workstation* -m ansible.builtin.copy -a 'content="Hello CLass" dest=/tmp/f1' -i henrique_inventory
+      #
+      # collections
+      # collection = Module + Plugins + Ansible Roles
+      # Namespace(company/org).collection(product).Module/Plugin/Role
+      # cisco.ios.ios_interfaces:

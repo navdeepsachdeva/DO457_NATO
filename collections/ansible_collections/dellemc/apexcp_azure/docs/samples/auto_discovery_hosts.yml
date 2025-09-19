@@ -1,0 +1,15 @@
+---
+- name: System Initialize Nodes Information
+  hosts: localhost
+  vars:
+    primary_host_ip: "{{ primary_host_ip }}"
+
+  tasks:
+    - name: Get Auto-discovered Nodes before os provisioning
+      dellemc.apexcp_azure.dell_apexcp_azure_auto_discovery_hosts:
+        primary_host_ip: "{{ primary_host_ip }}"
+      register: initialize_nodes_info
+
+    - name: Get System Initialize Nodes Result
+      ansible.builtin.debug:
+        msg: "{{ initialize_nodes_info }}"

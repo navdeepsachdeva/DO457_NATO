@@ -1,0 +1,22 @@
+- name: Change Interface for GigabitEthernet1
+  cisco.ios.ios_interfaces:
+    config:
+      - name: GigabitEthernet1
+        description: "Hello_GigabitEthernet1"
+
+- name: Change Interface for GigabitEthernet2
+  cisco.ios.ios_interfaces:
+    config:
+      - name: GigabitEthernet2
+        description: "Hello_GigabitEthernet2"
+
+- name: One more Task
+  cisco.ios.ios_config:
+    lines:
+      - service timestamps debug datetime msec
+
+- name: Back up the IOS configurations
+  cisco.ios.ios_config:
+    backup: true
+    backup_options:
+      filename: "{{ inventory_hostname }}.txt"

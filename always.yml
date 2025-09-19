@@ -1,0 +1,7 @@
+- name: Always Template
+  hosts: iosxe1*
+  gather_facts: false
+  tasks:
+    - name: Always Task
+      ansible.builtin.debug:
+        msg: "Always Task Executed"

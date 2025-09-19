@@ -1,0 +1,41 @@
+
+- name: Import a Playbook
+  ansible.builtin.import_playbook: linux.yml
+
+- name: Large/Integration Playbook
+  hosts:
+    - iosxe1*
+    - junos1*
+  gather_facts: false
+  tasks:
+    - name: Import a Cisco Task File 1
+      ansible.builtin.import_tasks:
+        file: tasks/external_cisco1.yml
+      when:
+        - meme_var is not defined
+        - ansible_network_os == "cisco.ios.ios"
+
+    - name: Include a Cisco Task File 2
+      ansible.builtin.include_tasks:
+        file: tasks/external_cisco2.yml
+      when:
+        - meme_var is not defined
+        - ansible_network_os == "cisco.ios.ios"
+
+    - name: Include a Juniper Task File 1
+      ansible.builtin.import_tasks:
+        file: tasks/external_juniper.yml
+      when:
+        - meme_var is not defined
+        - ansible_network_os == "junipernetworks.junos.junos"
+
+    - name: Loop Task Files
+      # ansible.builtin.import_tasks:
+      ansible.builtin.include_tasks:
+        file: "{{ item }}"
+      loop:
+        - tasks/external_cisco1.yml
+        - tasks/external_cisco2.yml
+      when:
+        - meme_var is not defined
+        - ansible_network_os == "cisco.ios.ios"

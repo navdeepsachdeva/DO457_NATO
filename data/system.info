@@ -1,0 +1,8 @@
+Magic Host Var  = iosxe1.lab.example.com
+Net Hostname    = iosxe1.lab.example.com
+Device Image    = bootflash:packages.conf
+Model Number    = C8000V
+Python Version  = 3.9.13
+Serial Number   = 9FKY95ACHJJ
+Device OS Ver   = 17.06.02
+IP Address      = 172.25.250.20

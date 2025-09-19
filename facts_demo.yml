@@ -1,0 +1,58 @@
+- name: Variable Demo
+  hosts:
+    - cisco
+    - arista
+  # hosts: iosxe1*
+  gather_facts: false
+  # cisco.ios.ios_facts
+
+  tasks:
+    - name: Collect Cisco Custom/all facts
+      cisco.ios.ios_facts:
+        gather_subset: all
+      when: inventory_hostname in groups["cisco"]
+
+    - name: Collect Arista Custom/all facts
+      arista.eos.eos_facts:
+        gather_subset: all
+      when: inventory_hostname in groups["arista"]
+
+    - name: Print Variable Value
+      ansible.builtin.copy:
+        dest: ./data/{{ inventory_hostname }}.txt
+        content: |
+          Magic Host Var  = {{ inventory_hostname }}
+          Net Hostname    = {{ ansible_facts.net_hostname }}
+          Device Image    = {{ ansible_facts['net_image'] | default("NA") }}
+          Model Number    = {{ ansible_net_model | default("NA") }}
+          Python Version  = {{ ansible_net_python_version | default("NA") }}
+          Serial Number   = {{ ansible_net_serialnum | default("NA") }}
+          Device OS Ver   = {{ ansible_net_version | default("NA") }}
+          IP Address      = {{ ansible_net_all_ipv4_addresses[0] | default("NA") }}
+          GE1 Interafce   = {{ ansible_facts['net_interfaces']['GigabitEthernet1']['macaddress'] | default("NA") }}
+          GE2 Interafce   = {{ ansible_net_interfaces['GigabitEthernet2']['macaddress'] | default("NA") }}
+      delegate_to: workstation.lab.example.com
+
+    # - name: Print Variable Value
+    #   ansible.builtin.debug:
+    #     msg: |
+    #       Magic Host Var  = {{ inventory_hostname }}
+    #       Net Hostname    = {{ ansible_facts.net_hostname }}
+    #       Device Image    = {{ ansible_facts['net_image'] | default("NA") }}
+    #       Model Number    = {{ ansible_net_model | default("NA") }}
+    #       Python Version  = {{ ansible_net_python_version | default("NA") }}
+    #       Serial Number   = {{ ansible_net_serialnum | default("NA") }}
+    #       Device OS Ver   = {{ ansible_net_version | default("NA") }}
+    #       IP Address      = {{ ansible_net_all_ipv4_addresses[0] | default("NA") }}
+    #       GE1 Interafce   = {{ ansible_facts['net_interfaces']['GigabitEthernet1']['macaddress'] | default("NA") }}
+    #       GE2 Interafce   = {{ ansible_net_interfaces['GigabitEthernet2']['macaddress'] | default("NA") }}
+
+    # - name: Change Interface
+    #   cisco.ios.ios_interfaces:
+    #     config:
+    #       - name: GigabitEthernet1
+    #         description: "YOU_{{ ansible_net_serialnum }}"
+    #   when: ansible_net_version >= "17.0.0"
+
+
+

@@ -1,0 +1,12 @@
+- name: Test a Module on Cisco Device
+  hosts: 
+    - iosxe1.lab.example.com
+    - iosxe2.lab.example.com
+  gather_facts: false
+  tasks:
+    - name: Change Description
+      cisco.ios.ios_banner:
+        banner: login
+        text: "Testing Banner Login11"
+        state: present
+      

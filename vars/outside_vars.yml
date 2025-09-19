@@ -1,0 +1,39 @@
+eth_desc: "Level14 Play vars_files"
+
+
+cisco_banner:
+  - banner_type: login
+    banner_text: "Hurry Login Set"
+  - banner_type: motd
+    banner_text: "MOTD is Nice Set"
+
+simple_list:
+  - GigabitEthernet1
+  - GigabitEthernet2
+
+complex_list:
+  - eth_name: GigabitEthernet1
+    eth_desc: "Hello_GigabitEthernet11"
+  - eth_name: GigabitEthernet2
+    eth_desc: "Hello_GigabitEthernet22"
+
+interface_dict:
+  GigabitEthernet1: "Dict_GigabitEthernet11"
+  GigabitEthernet2: "Dict_GigabitEthernet22"
+
+vlan:
+  hypervisors:
+    name: physical-servers
+    mtu: 9000
+    id: 1000
+  vms:
+    name: virtual-servers
+    mtu: 1500
+    id: 2000
+  dmz:
+    name: dmz
+    mtu: 1500
+    id: 3000
+
+
+# eth_desc: "CHANGE_ME"

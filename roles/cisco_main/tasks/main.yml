@@ -1,0 +1,29 @@
+---
+# tasks file for cisco_main
+
+- name: Set a Login Banner
+  cisco.ios.ios_banner:
+    banner: login
+    state: present
+    text: "{{ cisco_main_banner_text }}"
+  notify:
+    - Save Config is something changes
+    - Banner Changed
+
+- name: Change Interface for GigabitEthernet1
+  cisco.ios.ios_interfaces:
+    config:
+      - name: GigabitEthernet1
+        description: "{{ cisco_main_GigabitEthernet1_desc }}"
+  notify:
+    - Save Config is something changes
+    - GigabitEthernet1 Changed
+
+- name: Change Interface for GigabitEthernet2
+  cisco.ios.ios_interfaces:
+    config: 
+      - name: GigabitEthernet2
+        description: "{{ cisco_main_GigabitEthernet1_desc }}"
+  notify:
+    - Save Config is something changes
+    - GigabitEthernet2 Changed

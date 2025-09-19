@@ -1,0 +1,19 @@
+- name: Use a Role
+  hosts: iosxe1*
+  gather_facts: false
+  # roles:
+  #   - role: cisco_main
+  #     cisco_main_banner_text: "LOGIN via PLAY"
+  #     cisco_main_GigabitEthernet1_desc: "Hello GigabitEthernet1 PLAY"
+  #     cisco_main_GigabitEthernet2_desc: "Hello GigabitEthernet2 PLAY"
+
+  tasks:
+    - name: Run a ROLE based on Condition
+      # ansible.builtin.import_role:
+      ansible.builtin.include_role:
+        name: cisco_main
+      when: meme_var is not defined
+      vars:
+        cisco_main_banner_text: "LOGIN via PLAY"
+        cisco_main_GigabitEthernet1_desc: "Hello GigabitEthernet1 PLAY"
+        cisco_main_GigabitEthernet2_desc: "Hello GigabitEthernet2 PLAY"

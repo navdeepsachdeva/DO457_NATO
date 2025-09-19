@@ -1,0 +1,21 @@
+- name: Loops Demo
+  hosts: iosxe1*
+  gather_facts: true
+  vars_files:
+    - vars/outside_vars.yml
+
+  tasks:
+
+    - name: Change Interface via Dict
+      cisco.ios.ios_interfaces:
+        config:
+          - name: "{{ item.key }}"
+            description: "{{ item.value }}_ME"
+      when:
+        - ansible_facts['net_image'] == "bootflash:packages.conf"
+        - ansible_net_model == "C8000V" 
+        - meme_var is defined or ansible_net_python_version >= "3.9.0"
+      loop: "{{ interface_dict | dict2items}}" 
+      # list of condition is and operator
+      # when: ansible_facts['net_image'] == "bootflash:packages.conf" and ansible_net_serialnum == "C8000V" 
+

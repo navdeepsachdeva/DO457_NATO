@@ -1,0 +1,28 @@
+[tool.poetry]
+package-mode = false
+name = "ansible-collection-cisco-catalystwan"
+description = "Ansible modules using catalystwan SDK."
+authors = ["acichon <acichon@cisco.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+ansible-core = "2.16.6"
+ansible = "9.4.0"
+catalystwan = "v0.35.5dev3"
+flake8 = "5.0.4"
+black = "24.3.0"
+pre-commit = "3.7"
+pydantic = "2.7"
+requests = "2.32.2"
+urllib3 = "2.2.2"
+ansible-lint = { version = "6.22.2", markers = "platform_system != 'Windows'" }
+
+[tool.poetry.group.dev.dependencies]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120

@@ -1,0 +1,47 @@
+## INI Format Inventory ##
+
+workstation.lab.example.com ansible_connection=local
+controller.lab.example.com ansible_connection=ssh ansible_user=student
+
+[cisco]
+iosxe1.lab.example.com eth_desc="Level8 Inventory file IOSXE1"
+iosxe2.lab.example.com
+172.25.250.20
+172.25.250.21
+
+[arista]
+arista[1:2].lab.example.com
+
+[juniper]
+junos1.lab.example.com
+junos2.lab.example.com
+
+[routers:children]
+cisco
+arista
+
+[all:vars]
+eth_desc="Level3 Inventory file"
+# ansible_become_method=sudo/su LINUX
+# ansible_become_method=runas for windows
+# ansible_password=student
+
+
+# [cisco:vars]
+# ansible_network_os=cisco.ios.ios
+# 
+# [arista:vars]
+# ansible_network_os=arista.eos.eos
+
+
+# [juniper:vars]
+# ansible_network_os=junipernetworks.junos.junos
+# ansible_connection=ansible.netcommon.netconf
+
+
+# [range]
+# 192.168.[1:4].[5:8]
+#ericsson[1:10].lab.example.com
+
+## Parent Group is always "all" group ##
+## SYstem not in any group "ungrouped" ##

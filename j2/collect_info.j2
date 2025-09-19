@@ -1,0 +1,8 @@
+Magic Host Var  = {{ inventory_hostname }}
+Net Hostname    = {{ ansible_facts.net_hostname | default("NA")}}
+Device Image    = {{ ansible_facts['net_image'] | default("NA") }}
+Model Number    = {{ ansible_net_model | default("NA") }}
+Python Version  = {{ ansible_net_python_version | default("NA") }}
+Serial Number   = {{ ansible_net_serialnum | default("NA") }}
+Device OS Ver   = {{ ansible_net_version | default("NA") }}
+IP Address      = {{ ansible_net_all_ipv4_addresses[0] | default("NA") }}

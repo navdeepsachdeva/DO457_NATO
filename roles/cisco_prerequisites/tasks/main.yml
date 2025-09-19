@@ -1,0 +1,28 @@
+---
+# tasks file for cisco_prerequisites
+
+- name: Set a MOTD Banner
+  cisco.ios.ios_banner:
+    banner: motd
+    state: present
+    text: "{{ cisco_prerequisites_motd_banner }}"
+  notify:
+    - motd_banner_handler
+
+- name: Add a user specifying password type
+  cisco.ios.ios_user:
+    name: "{{ cisco_prerequisites_user }}"
+    configured_password: "pass@123"
+    password_type: password
+  notify:
+    - user_handler
+
+- name: Collect Cisco Custom/all facts
+  cisco.ios.ios_facts:
+    gather_subset: all
+  when: inventory_hostname in groups["cisco"]
+
+- name: Collect Information
+  ansible.builtin.template:
+    src: collect_info.j2
+    dest: ./data/system.info

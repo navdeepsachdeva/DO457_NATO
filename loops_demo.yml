@@ -1,0 +1,41 @@
+- name: Loops Demo
+  hosts: iosxe1*
+  gather_facts: false
+  vars_files:
+    - vars/outside_vars.yml
+
+  tasks:
+    - name: Print Simple List
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      with_items: "{{ simple_list }}"
+      # loop: "{{ simple_list }}"
+
+    - name: Print Complex List
+      ansible.builtin.debug:
+        msg: "{{ item.eth_name }} == {{ item['eth_desc']}}"
+      with_list: "{{ complex_list }}"
+      # loop: "{{ complex_list }}"
+
+    - name: Print Dictionary
+      ansible.builtin.debug:
+        msg: "{{ item.key }} __  {{ item.value }}"
+      #loop: "{{ interface_dict | dict2items}}" 
+      with_dict: "{{ interface_dict }}"
+
+    - name: Change Interface via Dict
+      cisco.ios.ios_interfaces:
+        config:
+          - name: "{{ item.key }}"
+            description: "{{ item.value }}"
+      when: item.key != "GigabitEthernet2"
+      loop: "{{ interface_dict | dict2items}}" 
+
+    - name: Print Sequence of Interfaces
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+        # msg: "GigabitEthernet{{ item }}"
+      with_sequence: start=1 end=4 format=GigabitEthernet%x
+
+
+## Loop only works with List/Array

@@ -1,0 +1,23 @@
+
+<html>
+<head>
+<title> Nice Info Page</title></head>
+
+<body>
+{% for i in groups["cisco"] %}
+
+## Info for Device {{ hostvars[i].inventory_hostname }} ##
+
+Magic Host Var  = {{ hostvars[i].inventory_hostname }}
+Net Hostname    = {{ hostvars[i].ansible_facts.net_hostname | default("NA")}}
+Device Image    = {{ hostvars[i].ansible_facts['net_image'] | default("NA") }}
+Model Number    = {{ hostvars[i].ansible_net_model | default("NA") }}
+Python Version  = {{ hostvars[i].ansible_net_python_version | default("NA") }}
+Serial Number   = {{ hostvars[i].ansible_net_serialnum | default("NA") }}
+Device OS Ver   = {{ hostvars[i].ansible_net_version | default("NA") }}
+IP Address      = {{ hostvars[i].ansible_net_all_ipv4_addresses[0] | default("NA") }}
+
+{% endfor %}
+
+</body>
+</html>

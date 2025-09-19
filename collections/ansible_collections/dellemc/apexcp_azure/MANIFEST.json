@@ -1,0 +1,32 @@
+{
+ "collection_info": {
+  "namespace": "dellemc",
+  "name": "apexcp_azure",
+  "version": "1.1.0",
+  "authors": [
+   "Dell ACP Azure Ansible Development Team"
+  ],
+  "readme": "README.md",
+  "tags": [
+   "storage"
+  ],
+  "description": "Dell APEX Cloud Platform for Microsoft Azure Ansible Modules",
+  "license": [
+   "Apache-2.0"
+  ],
+  "license_file": "",
+  "dependencies": {},
+  "repository": "https://github.com/dell/ansible-acp-azure",
+  "documentation": "https://github.com/dell/ansible-acp-auzre/tree/master/docs",
+  "homepage": "https://github.com/dell/ansible-acp-azure",
+  "issues": "mailto:ansible.team@dell.com"
+ },
+ "file_manifest_file": {
+  "name": "FILES.json",
+  "ftype": "file",
+  "chksum_type": "sha256",
+  "chksum_sha256": "4de7a82998a819c40f1af8d3d46f7f7305363486d25e5b6c553a688e277b01eb",
+  "format": 1
+ },
+ "format": 1
+}

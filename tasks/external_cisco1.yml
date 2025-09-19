@@ -1,0 +1,11 @@
+- name: Set a Banner
+  cisco.ios.ios_banner:
+    banner: login
+    state: present
+    text: "I am Doing IOS Banner"
+
+- name: Add a user specifying password type
+  cisco.ios.ios_user:
+    name: amaya
+    configured_password: "pass@123"
+    password_type: password

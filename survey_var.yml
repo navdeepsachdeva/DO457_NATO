@@ -1,0 +1,21 @@
+- name: Test Variable in Inventory
+  hosts: all
+  gather_facts: false
+  # vars_prompt not for ANsible Controller GUI
+  # vars_prompt:
+  #   - name: user_name
+  #     prompt: "Enter your Name"
+  #     private: false
+
+  #   - name: user_fav_color
+  #     prompt: "Enter your Fav color"
+  #     private: false
+
+  tasks:
+    - name: Print Variable
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} // {{ ansible_network_os }}"
+
+    - name: Print Survey Variable
+      ansible.builtin.debug:
+        msg: "{{ user_name }} // {{ user_fav_color }}"

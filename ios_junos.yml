@@ -1,0 +1,51 @@
+- name: IOS Handlers/Dependency Task
+  hosts: iosxe1*
+  gather_facts: false
+  tasks:
+    - name: Set a Banner
+      cisco.ios.ios_banner:
+        banner: login
+        state: present
+        text: |
+          I am Doing IOS Banner Again,
+          very very Long Banner,
+          i have no Idea how to read this complex line,
+          very painful
+        # text: >
+        #   I am Doing IOS Banner Again,
+        #   very very Long Banner,
+        #   i have no Idea how to read this complex line,
+        #   very painful
+
+        # text: "I am Doing IOS Banner Again, very very Long Banner, i have no Idea how to read this complex line , very painful"
+
+    - name: Change Interface
+      cisco.ios.ios_interfaces:
+        config:
+          - name: GigabitEthernet1
+            description: "Hello_GigabitEthernet11"
+
+- name: Juniper Setup
+  hosts: junos1*
+  gather_facts: false
+  tasks:
+    - name: Open 830 using network_cli for netconf to work
+      junipernetworks.junos.junos_netconf:
+        netconf_port: 830
+        state: present
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+
+    - name: Back up Junos configurations
+      junipernetworks.junos.junos_config:
+        backup: true
+        backup_options:
+          filename: "{{ inventory_hostname }}.cfg"
+          dir_path: /configbackups
+
+    - name: close 830 using network_cli for netconf to work
+      junipernetworks.junos.junos_netconf:
+        netconf_port: 830
+        state: absent
+      vars:
+        ansible_connection: ansible.netcommon.network_cli

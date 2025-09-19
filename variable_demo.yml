@@ -1,0 +1,34 @@
+- name: Variable Demo
+  hosts:
+    - cisco
+    - arista
+  gather_facts: false
+
+  # Bad Practise to Hardcore value in Play
+  vars:
+    eth_desc: "Level12_Play vars"
+
+  # Only Development Level
+  vars_prompt:
+    - name: eth_desc
+      prompt: "Enter your Ethernet Desc"
+      private: false
+
+  # Get value from External Variable File
+  vars_files:
+    - ./vars/outside_vars.yml
+
+  tasks:
+    - name: Print Variable Value
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} == {{ eth_desc }}"
+
+    - name: Print Dictionary Variable Value
+      ansible.builtin.debug:
+        msg: "{{ vlan.hypervisors.name }} // {{ vlan['vms']['mtu'] }} {{ ansible_network_os }} {{ ansible_connection }}"
+
+    - name: Change Interface
+      cisco.ios.ios_interfaces:
+        config:
+          - name: GigabitEthernet1
+            description: "{{ eth_desc }}"

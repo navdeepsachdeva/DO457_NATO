@@ -1,0 +1,5 @@
+---
+# defaults file for cisco_main
+cisco_main_banner_text: "Hello Banner Level 2 Defaults"
+cisco_main_GigabitEthernet1_desc: "Hello GigabitEthernet1 Text"
+cisco_main_GigabitEthernet2_desc: "Hello GigabitEthernet2 Text"

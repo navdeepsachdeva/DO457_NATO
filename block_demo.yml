@@ -1,0 +1,63 @@
+- name: Ignore Errors Demo Play
+  hosts: iosxe1*
+  gather_facts: true
+  tasks:
+
+    - name: Task 1 Outside Block
+      ansible.builtin.debug:
+        msg: "Outside Block Task 1"
+
+    - name: Setup Cisco Device Config
+      when: ansible_net_python_version >= "3.9.0"
+      block:
+        - name: Set a Banner
+          cisco.ios.ios_banner:
+            banner: login
+            state: present
+            text: "I am Doing IOS Banner"
+
+        - name: Add a user specifying password type
+          cisco.ios.ios_user:
+            name: amaya
+            configured_password: "pass@123"
+            password_type: password
+
+        - name: Change Interface for GigabitEthernet1
+          cisco.ios.ios_interfaces:
+            config:
+              - name: GigabitEthernet1
+                descriptionnn: "Hello_GigabitEthernet1"
+
+        - name: One more Task
+          cisco.ios.ios_config:
+            lines:
+              - service timestamps debug datetime msec
+
+      rescue:
+        - name: Start Rollback
+          ansible.builtin.debug:
+            msg: "Mayday Mayday Start Rollback"
+        - name: Remove Banner
+          cisco.ios.ios_banner:
+            banner: login
+            state: absent
+        - name: Remove User
+          cisco.ios.ios_user:
+            name: amaya
+            state: absent
+
+      always:
+        - name: Inform Client
+          ansible.builtin.debug:
+            msg: "Send email to client"
+        - name: Back up the IOS configurations
+          cisco.ios.ios_config:
+            backup: true
+            backup_options:
+              filename: "{{ inventory_hostname }}.txt"
+          # delegate_to: workstation.lab.example.com
+
+
+    - name: Task 2 Outside Block
+      ansible.builtin.debug:
+        msg: "Outside Block Task 2"

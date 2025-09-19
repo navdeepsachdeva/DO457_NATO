@@ -1,0 +1,20 @@
+- name: Open 830 using network_cli for netconf to work
+  junipernetworks.junos.junos_netconf:
+    netconf_port: 830
+    state: present
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+
+- name: Back up Junos configurations
+  junipernetworks.junos.junos_config:
+    backup: true
+    backup_options:
+      filename: "{{ inventory_hostname }}.cfg"
+      dir_path: /configbackups
+
+- name: close 830 using network_cli for netconf to work
+  junipernetworks.junos.junos_netconf:
+    netconf_port: 830
+    state: absent
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

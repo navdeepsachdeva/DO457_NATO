@@ -1,0 +1,20 @@
+- name: Test a Module on Cisco Device
+  hosts: iosxe1.lab.example.com
+  gather_facts: false
+  tasks:
+    - name: Change Description on iosxe1.lab.example.com
+      cisco.ios.ios_banner:
+        banner: login
+        text: "Testing Banner Login David A"
+        state: present
+      
+- name: Test a Module on Cisco Device
+  hosts: iosxe2.lab.example.com
+  gather_facts: false
+  tasks:
+    - name: Change Description on iosxe2.lab.example.com
+      cisco.ios.ios_banner:
+        banner: login
+        text: "Testing Banner Login Henrique F"
+        state: present
+      

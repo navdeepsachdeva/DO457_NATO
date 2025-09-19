@@ -1,0 +1,59 @@
+- name: IOS Handlers/Dependency Task
+  hosts: iosxe1*
+  gather_facts: false
+  tasks:
+    - name: Set a Banner
+      cisco.ios.ios_banner:
+        banner: login
+        state: present
+        text: "I am Doing IOS Banner Again"
+      notify:
+        - Save Config is something changes
+        - Banner Changed
+
+    - name: Change Interface
+      cisco.ios.ios_interfaces:
+        config:
+          - name: GigabitEthernet1
+            description: "Hello_GigabitEthernet11"
+      notify:
+        - Save Config is something changes
+        - Interface Changed
+
+    - name: One more Task
+      cisco.ios.ios_config:
+        lines:
+          - service timestamps debug datetime msec
+      notify:
+        - Test me
+
+  handlers:
+    - name: Test me
+      ansible.builtin.debug:
+        msg: "Test Done Successfully"
+
+    - name: Interface Changed
+      ansible.builtin.debug:
+        msg: "I have Changed Interface Successfully"
+
+    - name: Banner Changed
+      ansible.builtin.debug:
+        msg: "Banner Changed Successfully"
+
+    - name: Save Config is something changes
+      cisco.ios.ios_config:
+        save_when: always
+        backup_options:
+          filename: backup.cfg
+          dir_path: ./backup/
+
+  # tasks section always run
+  # handlers section depency only
+
+
+  # hosts: iosxe1.lab.example.com,iosxe2.lab.example.com
+  # hosts:
+  #   - iosxe1.lab.example.com
+  #   - iosxe2.lab.example.com
+  #
+  #   "-" List/Array of something

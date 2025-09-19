@@ -1,0 +1,58 @@
+- name: Platform-independent Modules Demo
+  hosts:
+    - iosxe1*
+    - arista1*
+    - junos1*
+  gather_facts: false
+  tasks:
+    - name: Run the command on cisco
+      ansible.netcommon.cli_command:
+        command: "show ip interface brief"
+      when: ansible_network_os == 'cisco.ios.ios'
+      register: cisco_out
+
+    - name: Print Cisco Output
+      ansible.builtin.debug:
+        msg: "{{ cisco_out.stdout_lines }}"
+        # msg: "{{ cisco_out }}"
+      when: ansible_network_os == 'cisco.ios.ios'
+
+    - name: Run the command on Arista
+      ansible.netcommon.cli_command:
+        command: "show ip interface brief"
+      when: ansible_network_os == 'arista.eos.eos'
+      register: arista_out
+
+    - name: Print Arista Output
+      ansible.builtin.debug:
+        msg: "{{ arista_out.stdout_lines }}"
+      when: ansible_network_os == 'arista.eos.eos'
+
+    - name: Open 830 using network_cli for netconf to work
+      junipernetworks.junos.junos_netconf:
+        netconf_port: 830
+        state: present
+      when: ansible_network_os == 'junipernetworks.junos.junos'
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+
+    - name: Run Junos command
+      ansible.netcommon.cli_command:
+        command: "show interface terse"
+      when: ansible_network_os == 'junipernetworks.junos.junos'
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+      register: junos_out
+
+    - name: Print JUNOS Output
+      ansible.builtin.debug:
+        msg: "{{ junos_out }}"
+      when: ansible_network_os == 'junipernetworks.junos.junos'
+    - name: close 830 using network_cli for netconf to work
+      junipernetworks.junos.junos_netconf:
+        netconf_port: 830
+        state: absent
+      when: ansible_network_os == 'junipernetworks.junos.junos'
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+                                                          

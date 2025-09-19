@@ -1,0 +1,9 @@
+{% for me in complex_list %}
+interface {{ me.eth_name }}
+	description "{{ me.eth_desc }}"
+{% endfor %}
+
+{% for ban in cisco_banner %}
+banner {{ ban.banner_type }} @
+	{{ ban.banner_text | quote }} @
+{% endfor %} 

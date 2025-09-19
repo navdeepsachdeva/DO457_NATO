@@ -1,0 +1,6 @@
+collections:
+  - name: community.general
+  - name: redhat.rhv
+  - name: cisco.catalystwan
+    version: 0.3.0
+  - name:  /home/student/Downloads/dellemc-apexcp_azure-1.1.0.tar.gz

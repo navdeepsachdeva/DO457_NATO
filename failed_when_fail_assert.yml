@@ -1,0 +1,42 @@
+- name: Ignore Errors Demo Play
+  hosts: iosxe1*
+  gather_facts: false
+  tasks:
+    - name: One more Task
+      cisco.ios.ios_config:
+        lines:
+          - service timestamps debug datetime msec
+
+    - name: Change Interface for GigabitEthernet1
+      cisco.ios.ios_interfaces:
+        config:
+          - name: GigabitEthernet1
+            description: "Dict_GigabitEthernet1"
+      register: myout
+      # failed_when: not myout.changed
+      # Label ok - fatal
+
+    # - name: Stop Playbook via fail module
+    #   ansible.builtin.fail:
+    #     msg: "Previous task Update = {{ myout.changed }}"
+    #   when: not myout.changed
+    # Label ok - fatal
+
+    - name: Stop/continue Playbook via assert module
+      ansible.builtin.assert:
+        that:
+          - myout.changed
+          - meme_var is not defined
+        fail_msg: "Assert Previous task Update = {{ myout.changed }}"
+        success_msg: "Assert Update Successful = {{ myout.changed }}"
+
+
+    # - name: Print output
+    #   ansible.builtin.debug:
+    #     msg: "{{ myout }}"
+
+    - name: Set a Banner
+      cisco.ios.ios_banner:
+        banner: login
+        state: present
+        text: "I am Doing IOS Banner"

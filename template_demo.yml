@@ -1,0 +1,31 @@
+- name: Template Demo
+  hosts: cisco
+  gather_facts: false
+  vars_files:
+    - vars/outside_vars.yml
+
+  tasks:
+    - name: Collect Cisco Custom/all facts
+      cisco.ios.ios_facts:
+        gather_subset: all
+      when: inventory_hostname in groups["cisco"]
+
+    - name: Collect Information
+      ansible.builtin.template:
+        src: ./j2/collect_all_info.j2
+        dest: ./data/system.info
+      delegate_to: workstation.lab.example.com
+
+    - name: Command Template
+      ansible.builtin.template:
+        src: j2/command.j2
+        dest: ./data/commands.txt
+
+    - name: Run the Template on Devices
+      cisco.ios.ios_config:
+        src: j2/command.j2
+        save_when: modified
+        # src: ./data/commands.txt
+
+
+

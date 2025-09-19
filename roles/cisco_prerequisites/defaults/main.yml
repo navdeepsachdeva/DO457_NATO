@@ -1,0 +1,5 @@
+---
+# defaults file for cisco_prerequisites
+
+cisco_prerequisites_motd_banner: "Setup MOTD Banner"
+cisco_prerequisites_user: amaya

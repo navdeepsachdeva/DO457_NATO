@@ -1,0 +1,7 @@
+- name: Test Variable in Inventory
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Print Variable
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} // {{ ansible_network_os }} == {{ var1 }}"

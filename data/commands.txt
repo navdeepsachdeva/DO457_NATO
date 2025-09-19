@@ -1,0 +1,10 @@
+interface GigabitEthernet1
+	description "Hello_GigabitEthernet11"
+interface GigabitEthernet2
+	description "Hello_GigabitEthernet22"
+
+banner login @
+	'Hurry Login Set' @
+banner motd @
+	'MOTD is Nice Set' @
+ 

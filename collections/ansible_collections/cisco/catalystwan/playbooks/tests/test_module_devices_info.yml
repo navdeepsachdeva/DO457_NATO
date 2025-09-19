@@ -1,0 +1,61 @@
+# Copyright 2024 Cisco Systems, Inc. and its affiliates
+# GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+---
+
+# Helper playbooks to test modules and flows while developing them
+
+
+# Tested operations:
+
+# 1. Get list of Edge devices
+# 2. Check if all controller devices are discoverable via system ip
+
+- name: Testing playbook to verify cisco.catalystwan.devices_info module operations
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - configuration_file_dev_vars.yml
+  vars:
+    manager_authentication: &manager_authentication
+      url: "{{ (vmanage_instances | first).mgmt_public_ip }}"
+      username: "{{ (vmanage_instances | first).admin_username }}"
+      password: "{{ (vmanage_instances | first).admin_password }}"
+  tasks:
+    - name: 1. Get list of Edge devices
+      cisco.catalystwan.devices_info:
+        device_category: vedges
+        manager_credentials:
+          <<: *manager_authentication
+      register: edge_devices
+
+    - name: 2. Backup running-config from vManage with default backup dir (in CWD)
+      cisco.catalystwan.devices_info:
+        backup: true
+        manager_credentials:
+          <<: *manager_authentication
+
+    - name: 3. Backup running-config from vManage to specified directory
+      cisco.catalystwan.devices_info:
+        backup: true
+        backup_dir_path: "/tmp/backups"
+        manager_credentials:
+          <<: *manager_authentication
+
+    - name: 4. Check if all controller devices are discoverable via system ip
+      cisco.catalystwan.devices_info:
+        device_category: controllers
+        filters:
+          device_ip: "{{ device_item.system_ip }}"
+        manager_authentication:
+          url: "{{ (vmanage_instances | first).mgmt_public_ip }}"
+          username: "{{ (vmanage_instances | first).admin_username }}"
+          password: "{{ (vmanage_instances | first).admin_password }}"
+      register: device_details_info
+      loop: "{{ vsmart_instances + vbond_instances + vmanage_instances }}"
+      loop_control:
+        loop_var: device_item
+        label: "hostname: {{ device_item.hostname }}, device_ip: {{ device_item.system_ip }}"
+      retries: 20
+      delay: 10
+      until: device_details_info.devices | length | int == 1

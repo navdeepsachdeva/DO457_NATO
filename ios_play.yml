@@ -1,0 +1,37 @@
+- name: IOS Play
+  hosts: iosxe1*
+  gather_facts: false
+  tasks:
+    - name: Set a Banner
+      cisco.ios.ios_banner:
+        banner: login
+        state: present
+        text: "I am Doing IOS Banner"
+      register: andy_capture
+
+    - name: Print the captured output
+      ansible.builtin.debug:
+        msg: "{{ andy_capture }}"
+        # msg: "HELLO {{ andy_capture }}"
+        # var: andy_capture
+        # verbosity: 2
+
+
+    - name: Change Interface
+      cisco.ios.ios_interfaces:
+        config:
+          - name: GigabitEthernet1
+            description: "Hello_GigabitEthernet11"
+      when: andy_capture.changed == true
+
+    - name: One more Task
+      cisco.ios.ios_config:
+        lines:
+          - service timestamps debug datetime msec
+
+  # hosts: iosxe1.lab.example.com,iosxe2.lab.example.com
+  # hosts:
+  #   - iosxe1.lab.example.com
+  #   - iosxe2.lab.example.com
+  #
+  #   "-" List/Array of something

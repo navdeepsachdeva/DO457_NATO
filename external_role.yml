@@ -1,0 +1,13 @@
+- name: Test External Roles
+  hosts: workstation*
+  gather_facts: false
+  roles:
+    - role: cisco.catalystwan.health_checks
+    #- role: farynam.mfitbs_openvpn_server
+
+  tasks:
+    - name: Generate CSR for device
+      cisco.catalystwan.devices_certificates:
+        device_ip: "192.168.1.1"
+        generate_csr: true
+
