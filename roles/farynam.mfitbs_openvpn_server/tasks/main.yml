@@ -1,5 +1,0 @@
-- name: All server related tasks
-  import_tasks: server.yml
-  when: >
-    ansible_distribution == 'Debian'
-    and groups['server'] is defined and inventory_hostname in groups['server']
