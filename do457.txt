@@ -1,0 +1,734 @@
+
+
+Welcome to DO457: Red Hat Ansible for Network Automation (EX457)
+
+Ansible Automation Platform 2.3
+
+
+
+Audio / Video / Screen Share
+
+
+Programming Knowledge NO
+Indentation nano(space) vim
+
+
+Name:
+Org: If Possible ? NATO CIA MI6
+Experience:
+
+	Experience with network administration, including a solid understanding of TCP/IP, routers, and managed switches. Students should be familiar with managing network devices from the command line, preferably with one or more of Cisco IOS/IOS XE, IOS XR, or NX-OS; Juniper Junos; or Arista EOS.
+
+	The students will work with text files and run commands in a Red Hat Enterprise Linux environment. A working knowledge of Linux, including how to edit text files and run commands from the shell, and how to use SSH to log in to remote systems. Knowledge equivalent to "Red Hat System Administration I" (RH124) or better is recommended.
+	vim ssh cp mv rm mkdir firewalld
+
+	Prior Ansible knowledge is not required.
+	Ansible, Ansible Tower/Controller, Github/gitlab, ansible-navigator, Containers Docker/Podman/Crictl
+
+Expectation:
+City/Timezone:
+Hobbies/Interesting Things:
+
+
+
+RH294			Ansible with Managed Hosts Linux
+DO417			Ansible with Managed Hosts Windows
+DO457			Ansible with Managed Hosts Network Devices
+DO374			Advanced Ansible Collection/ AAP
+DO467			AAP Controller/Tower Workflow
+
+
+
+
+							user/password
+
+controller		Ansible Controller student/student   root/redhat student is sudo user
+https://controller.lab.example.com  admin/redhat
+
+git			Local Github Server
+https://git.lab.example.com/ student / Stud3nt@123
+
+https://hub.lab.example.com student/redhat123  admin/redhat
+
+Workstation		student/student   root/redhat student is sudo user
+All Devices		student / student
+
+
+
+
+
+
+ai : autoindent - copy the previous line's indentation
+ts=2 : tabstop - set the number of spaces that the Tab key uses, when pressed
+sw=2 : shiftwidth - number of spaces to use with autoindent
+et : expandtab - use the space character as whitespace instead of Tab
+cuc : cursorcolumn - highlight the column the cursor is on
+
+
+	## Chapter 1: Introducing Red Hat Ansible Automation Platform ##
+ 
+Refer Diagram
+
+		Community  					Enterprise
+		ansible.org					redhat.com
+		Free						Paid
+		Dev/Test/Learning				Production
+		Not Supported					Supported	9*5 24*7
+		Lot of time/No Money				Lot of Money/No Time
+		AWX(Free)					Ansible Tower/Ansible Controller(Paid)
+		
+
+Red Hat AAP2 Components:
+
+1. Ansible Core:
+	yum install ansible-core -y
+   ansible.builtin  Modules: provide bare minumum modules, plugins and key functions such as loops, conditionals
+
+	Ealier version upto 2.9, All modules were provided by RedHat. version of Modules was also problem. 
+	cisco device: IOS 1.1    IOS 1.12  IOS 2.2  
+
+	ALL Ansible Modules	=	Ansible Core (RedHat) + Other Specific Modules (Vendor Cisco,MYsql, MS, VMWare, Juniper) 
+
+2. Ansible Content Collections:
+
+Ansible Collection = Modules + Plugins + Roles
+Ansible Content Collections made up of related modules, roles, and plug-ins for specific product with specific version (Device, OS etc )that are supported by the same group of developers. It provide flexibility to select different versions of collections for different version of Product( OS/Device)
+Collection Name
+Company.ProductName
+ansible[company/org].builtin[collection/product].debug[module]
+ansible.builtin.ssh[plugin]
+
+
+
+3. Automation Content Navigator ( ansible-navigator )
+   This tool replaces and extends the functionality of several older command-line utilities
+   yum install ansible-navigator -y 
+  ansible-config		ansible-navigator config
+  ansible-inventory		ansible-navigator inventory
+  ansible-playbook		ansible-navigator run
+  ansible-doc			ansible-navigator doc 
+  ansible-lint			ansible-navigator lint
+  LOCAL				Inside Container
+
+  It separates the control node on which you run Ansible from the automation execution environment that runs it, by running your playbooks in a container. 
+  watch podman ps 
+
+4. Automation Execution Environments
+   An automation execution environment is a container image that contains Ansible Core (ansible.builtin collection), Ansible Content Collections, and any Python libraries, executables, or other dependencies needed to run your playbook
+  Container images can be downloaded from RedHat or custom build( ansible-builder)
+  Playbooks can be run on Automation Controller (formerly called Red Hat Ansible Tower) using Container Image
+  ansible-builder to create your own custom execution environments
+
+5. Automation Controller (Red Hat Ansible Tower or AWX community)
+   Used to run ansible playbook on Enterprise scale. It provides a web UI and a REST API that can be used to configure, run, and evaluate your automation jobs.
+   The new automation controller design separate the control node (providing the web UI and API) from the automation execution environments (now running
+in containers).
+   
+6. Ansible Automation Hub
+   Place to distribute Ansible Collections and Container image registry for automation execution environments.
+   Ansible AUtomation Hub is provided by Redhat/Ansible Galaxy or can be Private Automation Hub within Organization
+   Hub 2 Types: 
+   	1. RedHat Hub
+   	2. Free Registry
+   	2. Private Hub
+	HUB = Collections (Roles, Modules, Plugins) + Images (ansible-core, Python, Collection which user needed)
+	
+7. Hosted Services
+
+   Red Hat Insights:  Keep checking Remote Systems to Understand automation code you are running and whether it is successful
+   Automation Services Catalog: Allow nontechnical users to trigger automation with a point-and-click tool based on ITSM standards
+
+
+Red Hat Ansible Automation Platform =  Automation HUB (Collections , Images ) + Ansible Controller (Tower) + ansible-navigator
+
+
+
+	## Chapter 2: Implementing an Ansible Playbook ##
+
+
+Inventory:
+
+	Default File:	/etc/ansible/hosts
+	Custom File:	YOUR_CUSTOM_PATH
+
+Inventory groups:
+all, ungrouped as system/ansible defined default groups
+Rest are CUSTOM NAMED groups
+
+## List Inventory
+
+## New Way ##
+ansible-navigator inventory --graph -m stdout
+ansible-navigator inventory --graph cisco -m stdout
+ansible-navigator inventory --list --yaml -m stdout
+
+## Old Way ##
+ansible-inventory --list	//JSON format
+ansible-inventory --graph
+ansible-inventory --graph group
+ansible-inventory --host host
+ansible-inventory --list --yaml -i INI_inventory_file
+ansible 192.168.[/2-3].[/4-8] --list-hosts -i invenotry_file_path
+
+# ansible-navigator presedence
+
+Ansibler Navigator yml file Priority:
+1.	export ANSIBLE_NAVIGATOR_CONFIG=/tmp/ansible-navigator.yml
+	echo $ANSIBLE_NAVIGATOR_CONFIG
+2. 	Current Folder 
+	./ansible-navigator.yml
+3. 	Home Folder
+	~/.ansible-navigator.yml
+	
+
+# Generate ansible-navigator.yml file
+
+ansible-navigator settings --effective --execution-environment-image hub.lab.example.com/ee-supported-rhel8:latest --pull-policy missing --mode stdout -i henrique_inventory  > stupid.yml
+mv stupid.yml ansible-navigator.yml
+
+---
+ansible-navigator:
+  ansible:
+    config:
+      path: ./ansible.cfg
+      help: false
+    inventory:
+      entries:
+        - ./folder_inventory
+      help: false
+  execution-environment:
+    container-engine: podman
+    enabled: true
+    image: hub.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  logging:
+    append: true
+    file: /home/student/nato/ansible-navigator.log
+    level: warning
+  mode: stdout
+  playbook-artifact:
+    enable: false
+    save-as: '{playbook_dir}/{playbook_name}-artifact-{time_stamp}.json'
+
+
+
+playbook artifact Enable: Log file per run for playbook
+
+pae: true   Log file created (vars stored in Log File), NO User Interaction 
+pae: false  NO Log file created BUT User interaction
+
+
+## Generate default ansible.cfg
+[root@workstation ~]# ansible-config init --disabled -t all > /etc/ansible/ansible.cfg
+
+
+Inventory Parameter in ansible.cfg and ansible-navigator.yml,  ansible-navigator.yml has Higher Priority
+
+Installation and subscription:
+subscription-manager repos --enable=rhel-7-server-ansible-2-rpms
+yum install ansible
+
+		Modules						Plugin
+		python						python
+		make changes to Managed Host			Support System to ansible
+
+## Folder for python Modules ##
+
+ls -l /usr/lib/python3.9/site-packages/ansible/modules/
+
+Module is a python script(Module) which will do activity(Changes) on Managed Hosts
+
+Ansible Modules get copied from Control Node to Managed Hosts and make changes
+Ansible Plugins doesn't get copied, this is for support services , NO changes made by Plugin on Managed Host
+ansible-navigator doc cisco.ios.ios_config
+
+## Plugins: Mostly Support Services ##
+
+Anything NOT available as module, is available as Plugin. Plugin provides Support Infrastructure
+
+## New Way Plugin ##
+ansible-navigator doc --type cliconf cisco.ios.ios
+ansible-navigator doc --type inventory -l
+
+## Ols Way Plugin ##
+ansible-doc -t SOMETHING_STUPID -l //to see all plugins
+ansible-doc -t connection -l
+ansible-doc -t connection network_cli
+ansible-doc -t inventory -l
+
+
+
+Ansible configuration File:
+
+ansible --version
+
+Default File:		/etc/ansible/ansible.cfg			Level 1
+User file(Home Dir):	~/.ansible.cfg					Level 2		// Hidden File
+Project specific:	./ansible.cfg					Level 3		// Current Folder
+Define Env Variable:	ANSIBLE_CONFIG =/tmp/ansible.config		Level 4
+
+
+
+## Setup Ansible indentation format in vim
+
+	vim ~/.vimrc
+	autocmd FileType yaml setlocal ai ts=2 sw=2 et cuc
+	
+ai : autoindent - copy the previous line's indentation
+ts=2 : tabstop - set the number of spaces that the Tab key uses, when pressed
+sw=2 : shiftwidth - number of spaces to use with autoindent
+et : expandtab - use the space character as whitespace instead of Tab
+cuc : cursorcolumn - highlight the column the cursor is on
+
+Playbook: ## For more variables Refer cheat-sheet.yml
+
+- name: Name/Purpose of Playbook
+  hosts:
+    - host1
+    - host2
+  gather_facts: false
+  tasks:
+  - name: gather ios_facts
+    cisco.ios.ios_config:
+      backup: yes
+    register: version
+
+
+
+## Running Playbooks with Automation Content Navigator: ##
+
+
+				###############  Instructions to Run Playbook ###############
+
+
+###############  Step 1:  Check Syntax of Playbook ###############
+
+## OLD Way
+ansible-playbook ios_play.yml --syntax-check
+## New Way
+ansible-navigator run ios_play.yml --syntax-check
+ansible-navigator lint ios_play.yml
+
+
+
+###############  Step 2:  Run Playbook in Simulation Mode (DRY RUN Or Prediction or Matrix Oracle) ###############
+###############  Step 2:  This Step only check in playbook if tasks will make any changes in managed hosts or not if run in real mode ###############
+
+ansible-playbook ios_play.yml --check
+ansible-navigator run ios_play.yml --check
+				#### OR ####
+
+ansible-playbook ios_play.yml -C
+ansible-navigator run ios_play.yml -C
+
+
+###############  Step 3:  Run Playbook in Real Mode ###############
+
+## Old Way
+ansible-playbook ios_play.yml
+ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook ios_play.yml
+
+## New Way
+ansible-navigator run ios_play.yml
+ansible-navigator run ios_play.yml --mode interactive
+ansible-navigator run ios_play.yml --step --pae false
+
+tasks:
+	- task1
+	  notify:
+	    - handler1
+	- task2:
+	    - handler2
+Handlers:
+	- handler1:
+	- handler2:
+	#Dependency tasks
+
+
+
+Documentation:
+
+## To see all Modules
+
+	ansible-doc -l   
+
+
+
+
+Ansible File and Data Formats
+It helps to be familiar with the file and data formats used by Ansible. Here is a list of formats,
+broken down with sublists describing where each format is used:
+• INI format
+– The Ansible configuration file, ansible.cfg
+– Inventory files (inventory files may also use YAML format)
+• YAML
+– Playbook files
+– Inventory files, optionally
+– Other included files, such as role files
+• JSON
+– The ansible-playbook program returns variable data in JSON form
+
+
+
+INI or YAML format:
+
+
+
+## Chapter 3: Managing and Running Playbooks ##
+
+## Git Basic Commands  ##
+git clone git@git.lab.example.com:student/snmp.git
+git checkout -b dev
+git add .
+git commit -m "dev branch and inventory"
+git push --set-upstream origin dev
+
+
+
+
+Ansible Tower/controller is paid (AWX free community) is only for executing playbook not write a playbook
+
+Ansible Tower 		ansible-playbook  	NO Container
+Ansible Controller 	ansible-navigator 	Container
+
+
+Run a Job:		
+1. Organization 
+2. Inventory and Group/Host Variables
+	A. Whole Inventory
+	B. For a specific Group
+	C. For a specific Host
+3. Playbook Folder(Manual Copy/Git SCM) on Tower	:	Copy Playbooks from workstation to Controller Machine
+4. rsync -av nato awx@controller:/var/lib/awx/projects/
+	Project must be owned by awx user
+5. Project maps to your_playbook_folder (Project <-> one_folder) One to one Mapping /var/lib/awx/projects/Git_Folder
+6. Credentials (Source Control/git, Device Credential)
+7. Job Template (Run a playbook using inventory,credentials and some other settings)
+8. RBAC User (Role Based Access Control) 
+
+Vars_Prompt is NOT compatible with tower, so SURVEY needs to be used
+
+Ansible
+1. Nginx 		GUIude or import task files.
+2. RabbitMQ		Messaging
+3. Database		postgres
+4. supervisorctl
+
+
+
+	Chapter 4: Managing Variables and Facts
+	
+	
+Ansible Config Scope: in ansible.cfg/command line inbuild ansible paramters
+
+	## 	Variable Scope:		##
+	
+Role Scope:	In roles structure (defaults/main.yml and vars/main.yml)
+Host Scope:	Inventory where hosts are defined (inventory file/dir, group_vars, host_vars)
+Play Scope:	In Playbook
+Global Scope:	Command Line  OR RUN Time
+
+		Scope of Variables:
+ROLE Scope < Host Scope (Inventory Level) <  Play Scope  < Global Scope
+
+
+1.	Host Scope		// Inventory File , group_vars, host_vars
+
+	A.	Group_inventory: 		inventory File_ group variable		use = symbol (if using ini format inventory)
+											[groupname:vars]
+											var1="somevalue"
+		
+	B.	Group_group_vars_folder: 	group_vars/{{groupname}}(.yml)		use : symbol
+			
+	C.	host inventory variable		use = symbol
+	D.	host_vars folder		host_vars/{{servername}}.yml		use : symbol
+
+
+2. 	Play Scope (Playbook)
+	A.	vars:
+	B. 	Vars_Prompt:	// prompt user to enter value //Interactive // Good for Development Env
+		
+	C.	vars_files:
+		- file_path
+		
+	D:	Task Scope:
+		vars:
+		  variable_name: "Value"  ## For that Specific Task
+	E. 	Set Fact
+			set_fact:
+			  var1: "Some value you want to override"	
+3.	Global Scope (Command Line Values)
+	A.	ansible-playbook abc.yml -e 'var_name=some_value var2=someValue2 var3=someValue3' 
+
+		## Ansible Facts ##
+- name: Variable Demo
+  hosts:
+    - cisco
+    - arista
+  # hosts: iosxe1*
+  gather_facts: false
+  # cisco.ios.ios_facts
+
+  tasks:
+    - name: Collect Cisco Custom/all facts
+      cisco.ios.ios_facts:
+        gather_subset: all
+      when: inventory_hostname in groups["cisco"]
+
+    - name: Collect Arista Custom/all facts
+      arista.eos.eos_facts:
+        gather_subset: all
+      when: inventory_hostname in groups["arista"]
+
+    - name: Print Variable Value
+      ansible.builtin.copy:
+        dest: ./data/{{ inventory_hostname }}.txt
+        content: |
+          Magic Host Var  = {{ inventory_hostname }}
+          Net Hostname    = {{ ansible_facts.net_hostname }}
+          Device Image    = {{ ansible_facts['net_image'] | default("NA") }}
+          Model Number    = {{ ansible_net_model | default("NA") }}
+          Python Version  = {{ ansible_net_python_version | default("NA") }}
+
+
+
+## Transforming Data with Filters ##
+IP Filters:
+https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters_ipaddr.html#playbooks-filters-ipaddr
+https://docs.ansible.com/ansible/latest/collections/ansible/utils/docsite/filters_ipaddr.html
+
+
+
+	## Chapter 5: Implementing Task Control ##
+	
+loops started from Ansible 2.5, before was 'with_*'	
+
+
+Tasks:
+- name: Print
+  debug:
+    msg: "eth{{item}}"
+  with_sequence: start=0 end=5
+ 
+- name: Print
+  debug:
+    msg: "{{item}}"
+  with_fileglob: 
+  - "/etc/ssh/*"
+
+
+
+	##  Handling Task Failure  ##
+	
+ignore_errors (Play and Task Level): Carry one with next tasks if any task fails
+force_handlers (Play Level): Run the invoked handlers by previous task in case of failure of next task 
+failed_when (Task Level): fail the task manually if output is NOT expected
+changed_when (Task Level): change status of task from OK to CHANGED so that we can invoke handlers
+
+
+block:
+
+try 		block
+catch 		rescue
+finally		always
+
+Block/Rollback Demo:
+Ansible doesn't have default rollback mechanism. (Desired Configuration)
+This can be used for rollback and get the device back to original (Good last know configurations)
+
+block: 
+	Actual Task
+rescue:
+	Rollback the tasks in tasks section # if there is an error on block task, it will come to rescue
+always:
+	Tasks which always needs to execute
+	
+
+
+## Chapter 6: Simplifying Playbooks with Roles and Ansible Content Collections ##
+
+
+Import (import_tasks, import_role)
+static inclusion of tasks(you know tasks in advance)
+ansible-playbook abc.yml --syntax-check    ## also check syntax of imported Task file
+4  task in external file ## Condition checked on all task one by one although condition is false
+--start-at-task can be used to start execution of playbook at certain point
+Might take more time
+for Development Environment
+Can not use loop for importing Task files
+
+include (include_tasks, include_role)
+Dynamic inclusion of tasks(you DO NOT know tasks in advance)
+ansible-playbook abc.yml --syntax-check    ## DOES NOT check syntax of included Task file
+4  task in external file ## Condition checked only once, if false file tasks are not included in execution of playbook
+--start-at-task doesn't work as task names are NOT known in advance
+Time efficient
+for Production Environment
+Use loop for Including Task files
+
+import_playbook: playbook can only be imported NOT included
+
+
+Roles:
+
+Reusability for a purpose
+
+Playbook: 30 tasks,variables: values,Inventory Hosts,
+
+Var: values	// sensitive data
+hosts: 		// exposing inventory
+30 tasks	// 10 tasks
+
+	Roles:
+reusability
+roles based on purpose: httpd php VYOS_NETWORK juniper_user  ios_user mysql  postgresql
+
+web_server
+network-security
+Find_all_devices -> Prerequisites -> Networking -> Web server -> Security -> Inform_Stake_Holders
+
+Roles:
+
+defaults: 	define variables in main.yml
+vars:		define variables in main.yml but highter priority than defaults
+tasks:		TASK file, write tasks in main.yml 
+handlers:	define handlers in main.yml which will be invoked by tasks in main.yml
+meta:		Define Dependency roles
+templates:	only template files .j2
+
+ansible.cfg
+roles_path=/path_of_roles_folder:/second_folder:/third_folder
+
+
+	3 type of roles:
+1. Private/Custom/Organization Roles		Local system/within Org
+2. Public Roles					ansible-galaxy
+3. Subscribed Roles				RedHat
+
+
+
+
+1. Pre  Tasks							pre_tasks/tasks
+2. Pre  Handlers						pre_tasks/notified_handlers
+3. Dependency Role Tasks (interface) 				vyos_user_role/tasks/main.yml
+4. Main Role Tasks (banner) 					vyos_interface_role/tasks/main.yml
+5. extra tasks in playbook					use_roles.yml tasks section -> tasks
+6. Dependency Role Handlers					vyos_user_role/handlers/main.yml
+7. Main Role Handlers						vyos_interface_role/handlers/main.yml
+8. extra handlers involved by tasks in playbook 		use_roles.yml handlers section  
+9. Post  Tasks							post_tasks/		
+10. Post  Handlers						post_tasks/notified -> handlers
+
+
+External Role:
+ ansible-galaxy role install farynam.mfitbs_openvpn_server --roles-path /home/student/nato/roles/
+ 
+ansible-galaxy role install --role-file(-r) ./roles/requirements.yml --roles-path /home/student/nato/roles/
+
+Collections:
+ ansible-galaxy collection install cisco.ios -p ./collections/
+ 
+ 
+ COllection Download:
+ Free: ansible galaxy
+ Paid: Redhat AUtomation Hub
+ Private: Private AUtomation Hub
+ 
+ 
+ ansible.cfg
+ collections_path=./collections:PATH1:PATH2
+
+## Chapter 7: Automating Network Administration Tasks ##
+
+
+Forks vs Serial:
+(CI/CD Implementation)
+
+
+	forks										serial
+1.	ansible.cfg(default 5)								playbook
+	ansible-plabyook a.yml --forks=4
+	ansible-navigator run a.yml --forks=4
+2.	Manage number of threads/load							control no of systems updating at same time
+	 on control node/container (save Control Node)
+	 per fork=100MB for Tower/Controller
+3.	task by task									host by host/play by play
+
+
+The serial keyword can also be specified as a percentage, which will be applied to the total number of hosts in a play, in order to determine the number of hosts per pass:
+
+Strategy:
+https://docs.ansible.com/ansible/latest/user_guide/playbooks_strategies.html
+
+
+
+Forks: 
+
+inventory 10
+Playbook: 4 tasks
+## Default forks=5
+Forks=4		Horizontal Direction
+
+	S1	S2	S3	S4		S5	S6	S7	S8		S9 	S10
+	T1	T1	T1	T1		T1	T1	T1	T1		T1	T1
+	T2	T2	T2	T2		T2	T2	T2	T2		T2	T2
+	T3	T3	T3	T3		T3	T3	T3	T3		T3	T3
+	T4	T4	T4	T4		T4	T4	T4	T4		T4	T4
+	
+	
+	
+	
+Serial: 3 
+Vertical Direction
+	S1	S2	S3			S4	S5	S6		S7	S8	S9	 	S10
+	T1	T1	T1			T1	T1	T1		T1	T1	T1		T1
+	T2	T2	T2			T2	T2	T2		T2	T2	T2		T2
+	T3	T3	T3			T3	T3	T3		T3	T3	T3		T3
+	T4	T4	T4			T4	T4	T4		T4	T4	T4		T4
+	
+	
+	
+
+	
+	Forks  >  Serial			4 > 3		No Problem
+	forks  < serial			3< 7		(Convert serial number into batches  3 +3 +1)
+	
+	forks overrise serial  or serial overrides forks  NONE
+	
+	forks= how many task i can run at one time			10
+	serial: how many nodes you want to upgrade in parallel		25  
+	T1	10,10,5
+	T2	10,10,5	
+	T3	10,10,5
+	T4	10,10,5
+	
+
+Actual RAM requirements vary based on how many hosts Tower will manage simultaneously (which is controlled by the forks parameter in the job template or the system ansible.cfg file). To avoid possible resource conflicts, Ansible recommends 4 GB of memory per 100 forks. For example, if forks is set to 100, 4 GB of memory is recommended; if forks is set to 400, 16 GB of memory is recommended.
+1 GB of memory per 10 forks OR 100MB per fork
+
+https://docs.ansible.com/ansible-tower/latest/html/installandreference/requirements_refguide.html	
+
+
+
+
+
+
+			###### Extra Topics for Production  ########
+Tags:
+	ansible provided tags: 		all(default tag),always,never,untagged,tagged
+	Rest are User Named tags: 	dev, prod,test,qa,windows,rhel,centos,fedora
+
+
+
+
+
+Strategy:
+debug strategy should only be used at development stage
+
+
+
+Special/Magic Variables:
+
+https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
+https://serverfault.com/questions/1042998/using-if-else-statement-inside-shell-module-in-ansible-playbook

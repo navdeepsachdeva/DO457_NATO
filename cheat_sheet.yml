@@ -1,0 +1,113 @@
+- name: NAME OF PLAYBOOK
+  hosts:
+    - SERVER NAME 1
+    - SERVER NAME 2
+  become: true/false
+  max_fail_percentage: 35
+  become_user: USERNAME
+  become_method: sudo/runas/su/enable
+  connection: network_cli/ssh/winrm
+  order: inventory/reverse_inventory/sorted/reverse_sorted/shuffle
+  gather_facts: true/false  ## default enable/disable in ansible.cfg   ## gathering=explicit/implicit
+  strategy: debug #for debugging on the run
+  vars:
+    myvars:
+    - var1: value
+    - var2: value
+  vars_files:
+    - PATH/variable_file1
+    - PATH/variable_file2
+  vars_prompt:
+    - name: username
+        prompt: "What is your username?"
+        private: no
+    - name: password
+      prompt: "What is your password?"
+  ignore_errors: true/false
+  force_handlers: true/false
+  serial: NUMBER OF HOSTS TO UPDATE FOR CI/CD
+    - 10%
+    - 30%
+    - 50%
+    - 100%
+  pre_tasks:
+    - task1:
+    - task2:
+  post_tasks:
+    - task1:
+    - task2:
+  import_playbook: PATH/PLAYBOOK_NAME
+  roles:
+    - role: ROLE_NAME
+    - {role: ROLE_NAME, var1: value1, var2: value2}
+  tasks:
+    - name: TASK NAME
+      ansible.builtin.include_role:
+        name: ROLE_NAME
+      ansible.builtin.import_role:
+        name: ROLE_NAME
+      ansible.builtin.include_tasks: EXTERNAL_TASK_FILE.yml
+      ansible.builtin.import_tasks: EXTERNAL_TASK_FILE.yml
+      FQCN.module_name:
+        module_option1: valu1
+        module_opt1: valuppp1
+        # at debug console
+        # task.args
+        # task.args['module_option1']="value1" // update value
+        # task.args["config"]=[{'name': 'GigabitEthernet1', 'description': 'Testing Cisco Module11'}]
+        # task.args['module_option3']="value2" // added another option
+        # del(task.args['module_opt1']) //delete option           ## redo command to rerun task  
+        module_option2:
+      loop: "{{ some_list }}" ## "{{ some_dict | dict2items }}"  ##In case you have dictionary convert to list
+      with_dict: "{{ some_dict}}"   ## "{{ some_list | items2dict }}" ##In case you have list convert to dictionary
+      with_sequence: start=0 end=5 format=eth%x
+      when:
+        - condition1 or condition2
+        - condition3 #LIST DESCRIBES (and) OPERATOR
+      failed_when: CONDITION
+      changed_when: CONDITION
+      register: some_output
+      ignore_errors: true/false
+      become: true/false
+      # List of conditions is "and" operator be default
+      # "or" operator has to specifically defined
+      when:
+        - condition1 or condition2
+        - condition3
+      vars:
+        - VAR1: VALUE # VARIABLE ONLY FOR THIS TASK
+        - VAR2: VALUE
+      tags:
+        - TAG1
+        - TAG2
+      notify:
+      - handler1
+      - handler2
+  handlers:
+        - name: handler1
+          MODULE_NAME:
+            module_option1: value1
+            module_option2: value2
+
+        - name: handler2
+          MODULE_NAME:
+            module_option1: value1
+            module_option2: value2
+          listen: handler1
+
+    - name: Run all task as ONE block
+      block:
+        - task1:
+        - task2: 
+      when: some_condition
+      rescue:
+        - task1: ROLLBACK TASK 1
+        - task2: ROLLBACK TASK 2
+      always:
+        - task1: ALWAYS TASK 1
+        - task2: ALWAYS TASK 2
+  
+  
+- name: Second Play in same file
+  import_playbook: playbook_name.yml
+  ##REST same as above
